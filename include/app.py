@@ -130,9 +130,9 @@ def do():
     def talk(words):
         print(words)
         os.system("say " + words)
-
+    talk("Привет спроси меня что-либо")
     # start my program
-    talk("Hy, ask me something")
+    #talk("Hy, ask me something")
 
     # function that listen and return what you say
     def command():
@@ -141,17 +141,17 @@ def do():
 
         # listen for words
         with sr.Microphone() as source:
-            print("Say:")
+            print("Говорите:")
             r.pause_threshold = 1
             r.adjust_for_ambient_noise(source, duration=1)
             audio = r.listen(source)
 
         # try understand what you say
         try:
-            task = r.recognize_google(audio).lower()
-            print("You say: " + task)
+            task = r.recognize_google(audio, language="ru-RU").lower()
+            print("Вы сказали: " + task)
         except sr.UnknownValueError:
-            talk("I dont understand you")
+            talk("Я вас не поняла")
             task = command()
 
         # return what you say
@@ -188,19 +188,19 @@ def do():
 
         # check what you say
         # if you say stop
-        if 'stop' in task:
-            talk("Ok,no problem")
+        if 'стоп' in task:
+            talk("Хорошо, без проблем")
             exit(0)
             # sys.exit()
 
         # if you want get her name
-        elif 'name' in task:
+        elif 'имя' in task:
             if name != '':
-                talk("My name is " + name)
+                talk("Меня зовут " + name)
             else:
-                talk("Name me please ")
+                talk("Назовите меня ")
                 name = command()
-                talk("My name is " + name)
+                talk("Меня зовут " + name)
 
         # hard type of checking weather
         # elif ('weather' in task) and ('kharkiv' in task):
@@ -209,7 +209,7 @@ def do():
         # weather("Kyiv, UA")
 
         # if you want get weather
-        elif 'weather' in task:
+        elif 'погода' in task:
             # make a request
             html = requests.get(f"https://www.google.com/search?&q={task}", headers=headers).text
 
@@ -217,58 +217,58 @@ def do():
             soup = BeautifulSoup(html, 'lxml')
 
             # print weather with parsing a first website
-            print(f"{soup.find('span', class_='wob_t q8U8x').text} degrees\n"
-                  f"Probability of precipitation:{soup.find('span', id='wob_pp').text}\n"
-                  f"Humidity:{soup.find('span', id='wob_hm').text}\n"
-                  f"Winter:{soup.find('span', id='wob_ws').text}\n")
+            print(f"{soup.find('span', class_='wob_t q8U8x').text} градусов\n"
+                  f"Вероятность осадков:{soup.find('span', id='wob_pp').text}\n"
+                  f"Влажность:{soup.find('span', id='wob_hm').text}\n"
+                  f"Ветер:{soup.find('span', id='wob_ws').text}\n")
             talk(
-                f"{soup.find('span', class_='wob_t q8U8x').text} degrees, Probability of precipitation:{soup.find('span', id='wob_pp').text}, Humidity:{soup.find('span', id='wob_hm').text}, Winter:{soup.find('span', id='wob_ws').text[0:-6]}")
+                f"{soup.find('span', class_='wob_t q8U8x').text} градусов, Вероятность осадков:{soup.find('span', id='wob_pp').text}, Влажность:{soup.find('span', id='wob_hm').text}, Ветер:{soup.find('span', id='wob_ws').text[0:-6]}")
         # if you want search and open website
-        elif ('search' in task) and ('open' in task):
-            talk("What do you want me find and open")
+        elif ('искать' in task) and ('открыть' in task):
+            talk("Что вы хотите чтобы я открыла")
             task = command()
-            talk('I am opening')
+            talk('уже открываю')
             kt.search(task)
 
         # if you want send an email
-        elif ('send' in task) and ('email' in task):
+        elif ('отправить' in task) and ('письмо' in task):
             # host
             host = "smtp.gmail.com"
-            talk("You want to say or to write")
+            talk("Вы хотели бы говорить или писать")
             what = command()
-            if 'right' not in what:
-                talk("Say a title of a letter:")
+            if 'написать' not in what:
+                talk("Скажите название письму:")
                 subject = command()
-                talk("Write who you want send:")
+                talk("Напишите кому хотите отправить:")
                 to_addr = input()
                 from_addr = "ashandybin1@gmail.com"
-                talk("What do you want to send:")
+                talk("Что вы хотите отправить")
                 body_text = command()
             else:
-                subject = input("Write a title of the letter: ")
-                to_addr = input("Write who you want send: ")
+                subject = input("Напишите название письму: ")
+                to_addr = input("Напишите кому хотите отправить: ")
                 from_addr = "ashandybin1@gmail.com"
-                body_text = input("What do you want to send: ")
+                body_text = input("Что вы хотите отправить: ")
 
             # send email
             send_email(host, subject, to_addr, from_addr, body_text)
 
-            talk("I have sent")
+            talk("Я отправила")
 
         # shutdown
-        elif ('shutdown' in task or 'turn off' in task) and ('computer' in task or 'mac' in task or 'notebook' in task):
-            talk("I am turning off")
+        elif ('вылючить' in task or 'потушить' in task) and ('ноутбук' in task or 'мак' in task or 'компьютер' in task):
+            talk("Я выключаю")
             subprocess.call(['osascript', '-e', 'tell app "loginwindow" to «event aevtrsdn»'])
 
         # screenshot
-        elif 'screenshot' in task:
-            talk("Say a name of the screenshot")
+        elif 'скриншот' in task:
+            talk("Скажите название скриншоту")
             pyautogui.screenshot(str(command()) + '.png')
-            talk("I have done a screenshot")
+            talk("Я сделал скриншот")
 
         # camera photo
-        elif 'camera' in task or 'make photo' in task:
-            talk("Say a name of the photo")
+        elif 'фото' in task or 'сделать фото' in task:
+            talk("Скажите название фотографии")
             # Включаем первую камеру
             cap = cv2.VideoCapture(0)
 
@@ -285,33 +285,33 @@ def do():
 
             # Отключаем камеру
             cap.release()
-            talk("I have done a photo")
+            talk("Я сделала фото")
 
         # translater
-        elif 'translate' in task:
-            talk("Say in english what do you want to translate")
+        elif 'перевести' in task:
+            talk("Скажите что перевести")
             text_to_trans = command()
-            talk("Write a languege to what do you want to translate")
+            talk("Напишите язык на который хотите перевести(на англиском)")
             lang = input()
             translater = Translator()
             # print(translater.translate(text_to_trans,dest=list(googletrans.LANGUAGES.keys())[list(googletrans.LANGUAGES.values()).index(lang)]).text)
             talk(translater.translate(text_to_trans,
                                       dest=list(LANGUAGES.keys())[list(LANGUAGES.values()).index(lang)]).text)
-        elif 'close' in task:
-            talk("I am closing")
+        elif 'закрыть' in task:
+            talk("Уже закрываю")
             list_ap = list(task.split())
             list_ap = list_ap[1:]
             task = " ".join(list_ap).title()
             os.system("pkill " + task)
-        elif 'open' in task:
-            talk("I am opening")
+        elif 'открыть' in task:
+            talk("Уже открываю")
             list_ap = list(task.split())
             list_ap = list_ap[1:]
             task = " ".join(list_ap).title()
             subprocess.call(
                 ["/usr/bin/open", "-W", "-n", "-a", "/Applications/" + task + '.app']
             )
-        elif 'time' in task:
+        elif 'время' in task:
             # make a request
             html = requests.get(f"https://www.google.com/search?&q={task}", headers=headers).text
 
@@ -321,11 +321,11 @@ def do():
             # print
             print(soup.find('div', class_="gsrt vk_bk FzvWSb YwPhnf").text, soup.find('div', class_="vk_gy vk_sh").text)
             talk(soup.find('div', class_="gsrt vk_bk FzvWSb YwPhnf").text)
-        elif 'what' in task or 'means' in task or 'mean' in task:
+        elif 'что' in task or 'значит' in task or 'значение' in task:
             my_api_key = "AIzaSyDfbp3ZPXKyWT5XYgo18uVLC9BOFlyy3F0"
             my_cse_id = "5e2ccab0206963d38"
 
-            talk('What do you want to understand')
+            talk('Что бы вы хотели понять')
 
             search = command()
 
@@ -340,6 +340,7 @@ def do():
             results = google_search(
                 search, my_api_key, my_cse_id, num=1)
             arr = list(BeautifulSoup(str(results[0]['htmlSnippet']), 'lxml').text)
+            print(results[0]['link'])
             arr = arr[0:-4]
             if "." in arr:
                 for i in arr[::-1]:
@@ -348,7 +349,26 @@ def do():
                     else:
                         arr = arr[0:-1]
             talk("".join(arr))
+        elif "таблетка" in task or "аптека" in task or "таблетки" in task:
+            my_api_key = "AIzaSyDfbp3ZPXKyWT5XYgo18uVLC9BOFlyy3F0"
+            my_cse_id = "4656abf4613434b28"
 
+            talk('Какие таблетки вы бы хотели купить')
+            search = command()
+
+            def google_search(search_term, api_key, cse_id, **kwargs):
+                service = build("customsearch", "v1", developerKey=api_key)
+                res = service.cse().list(q=search_term, cx=cse_id, **kwargs).execute()
+                if "items" in res.keys():
+                    return res["items"]
+                else:
+                    return None
+
+            results = google_search(
+                search, my_api_key, my_cse_id, num=1)
+            print((results[0]['link']))
+            arr = BeautifulSoup(str(results[0]['htmlSnippet']), 'lxml').text
+            talk(arr)
     # while program not stop
     """    def loop():
         makeSomething(command())
